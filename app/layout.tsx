@@ -1,30 +1,35 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import { AuthProvider } from "@/lib/auth-context"
-import "./globals.css"
+import type React from "react";
+import type { Metadata } from "next";
+import { Outfit } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { AuthProvider } from "@/lib/auth-context";
+import "./globals.css";
+import { SessionProvider } from "next-auth/react";
+import { ReactQueryProvider } from "@/components/react-query-provider";
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Gestion des Présences",
-  description: "Application de gestion des présences et absences",
-  generator: "v0.app",
-}
+  title: process.env.APP_TITLE,
+  description: process.env.APP_DESCRIPTION,
+  generator: process.env.GENERATOR,
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="dark">
-      <body className={`font-sans antialiased`}>
-        <AuthProvider>{children}</AuthProvider>
-        <Analytics />
-      </body>
+    <html lang="fr" className="light">
+      <SessionProvider>
+        <ReactQueryProvider>
+          <body className={`font-sans antialiased ${outfit.className}`}>
+            <AuthProvider>{children}</AuthProvider>
+            <Analytics />
+          </body>
+        </ReactQueryProvider>
+      </SessionProvider>
     </html>
-  )
+  );
 }

@@ -1,14 +1,33 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Search, MoreVertical, Mail } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Search, MoreVertical, Mail } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import Link from "next/link";
 
 // Mock employee data
 const mockEmployees = [
@@ -52,29 +71,33 @@ const mockEmployees = [
     position: "Développeur Junior",
     status: "active",
   },
-]
+];
 
 export default function EmployeesPage() {
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredEmployees = mockEmployees.filter(
     (employee) =>
       employee.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       employee.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      employee.department.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+      employee.department.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Employés</h2>
-          <p className="text-muted-foreground">Gérer les employés de l'entreprise</p>
+          <p className="text-muted-foreground">
+            Gérer les employés de l'entreprise
+          </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Ajouter un employé
-        </Button>
+        <Link href="/admin/employees/register">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Ajouter un employé
+          </Button>
+        </Link>
       </div>
 
       <Card>
@@ -82,7 +105,9 @@ export default function EmployeesPage() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Liste des employés</CardTitle>
-              <CardDescription>{filteredEmployees.length} employés au total</CardDescription>
+              <CardDescription>
+                {filteredEmployees.length} employés au total
+              </CardDescription>
             </div>
             <div className="relative w-64">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -131,7 +156,11 @@ export default function EmployeesPage() {
                   <TableCell>{employee.department}</TableCell>
                   <TableCell>{employee.position}</TableCell>
                   <TableCell>
-                    <Badge variant={employee.status === "active" ? "default" : "secondary"}>
+                    <Badge
+                      variant={
+                        employee.status === "active" ? "default" : "secondary"
+                      }
+                    >
                       {employee.status === "active" ? "Actif" : "Inactif"}
                     </Badge>
                   </TableCell>
@@ -145,7 +174,9 @@ export default function EmployeesPage() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem>Voir le profil</DropdownMenuItem>
                         <DropdownMenuItem>Modifier</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Désactiver</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          Désactiver
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -156,5 +187,5 @@ export default function EmployeesPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
