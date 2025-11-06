@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
+import { RegisterEmployeeForm } from "@/components/admin/employees/register-employee-form";
 
 // Mock employee data
 const mockEmployees = [
@@ -92,12 +93,7 @@ export default function EmployeesPage() {
             Gérer les employés de l'entreprise
           </p>
         </div>
-        <Link href="/admin/employees/register">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Ajouter un employé
-          </Button>
-        </Link>
+        <RegisterEmployeeForm />
       </div>
 
       <Card>

@@ -2,7 +2,6 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { AuthProvider } from "@/lib/auth-context";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { ReactQueryProvider } from "@/components/react-query-provider";
@@ -21,15 +20,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="light">
-      <SessionProvider>
-        <ReactQueryProvider>
+    <SessionProvider>
+      <ReactQueryProvider>
+        <html lang="fr" className="light">
           <body className={`font-sans antialiased ${outfit.className}`}>
-            <AuthProvider>{children}</AuthProvider>
+            {children}
             <Analytics />
           </body>
-        </ReactQueryProvider>
-      </SessionProvider>
-    </html>
+        </html>
+      </ReactQueryProvider>
+    </SessionProvider>
   );
 }

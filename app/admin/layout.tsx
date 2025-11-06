@@ -57,7 +57,6 @@ export default function AdminLayout({
     return redirect("/login");
   } else if (status === "authenticated" && session) {
     const user = session.user;
-
     return (
       <SidebarProvider>
         <Sidebar>
