@@ -46,16 +46,16 @@ export function RegisterEmployeeForm() {
     try {
       const { employee, password } = await mutation.mutateAsync(data);
 
-      // ✅ Mémoriser les données pour le dialogue
+      // Mémoriser les données pour le dialogue
       setEmployeeData({ employee, password });
 
-      // ✅ Fermer le Sheet
+      // Fermer le Sheet
       setOpenSheet(false);
 
-      // ✅ Ouvrir le Dialog
+      // Ouvrir le Dialog
       setOpenDialog(true);
 
-      // ✅ Reset du formulaire
+      // Reset du formulaire
       form.reset();
     } catch (err) {
       console.error(err);
@@ -66,7 +66,7 @@ export function RegisterEmployeeForm() {
     <>
       {/* Sheet d’ajout */}
       <Sheet open={openSheet} onOpenChange={setOpenSheet}>
-        <SheetTrigger asChild>
+        <SheetTrigger className="cursor-pointer" asChild>
           <Button>Ajouter</Button>
         </SheetTrigger>
         <SheetContent>
@@ -89,7 +89,7 @@ export function RegisterEmployeeForm() {
               <Button
                 type="submit"
                 disabled={mutation.isPending}
-                className="w-full"
+                className="w-full cursor-pointer"
               >
                 {mutation.isPending ? "Enregistrement..." : "Ajouter"}
               </Button>

@@ -4,7 +4,6 @@ import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -15,7 +14,7 @@ interface ShowEmployeeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   employee: User;
-  password: string;
+  password?: string;
 }
 
 export function ShowEmployeeDialog({
@@ -29,7 +28,7 @@ export function ShowEmployeeDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Détails de l’enregistrement</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-2">
+          <div className="space-y-2">
             <p>
               <strong>Nom:</strong> {employee.name}
             </p>
@@ -45,10 +44,12 @@ export function ShowEmployeeDialog({
             <p>
               <strong>Poste:</strong> {employee.position}
             </p>
-            <p className="font-medium text-red-500">
-              <strong>Mot de passe:</strong> {password}
-            </p>
-          </AlertDialogDescription>
+            {password && (
+              <p className="font-medium text-red-500">
+                <strong>Mot de passe:</strong> {password}
+              </p>
+            )}
+          </div>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Fermer</AlertDialogCancel>
