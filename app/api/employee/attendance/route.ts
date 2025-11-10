@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
           userId: session.user.id,
           date: {
             gte: today,
-            lt: new Date(today.getTime() + 24 * 60 * 60 * 1000),
+            lt: new Date(today.getTime()),
           },
         },
       });
@@ -96,10 +96,6 @@ export async function POST(request: NextRequest) {
       const attendance = await prisma.attendance.findFirst({
         where: {
           userId: session.user.id,
-          date: {
-            gte: today,
-            lt: new Date(today.getTime() + 24 * 60 * 60 * 1000),
-          },
           checkOut: null,
         },
       });
