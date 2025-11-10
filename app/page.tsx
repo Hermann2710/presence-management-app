@@ -4,7 +4,6 @@ import { redirect, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 export default function HomePage() {
-  const router = useRouter();
   const { data: session, status } = useSession();
 
   if (status === "loading" && !session)
@@ -19,7 +18,7 @@ export default function HomePage() {
   else if (status === "unauthenticated") {
     return redirect("/login");
   } else {
-    if (session?.user.role === "admin") {
+    if (session?.user.role === "ADMIN") {
       redirect("/admin");
     } else {
       redirect("/employee");
