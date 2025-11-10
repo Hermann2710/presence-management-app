@@ -1,9 +1,9 @@
-// app/admin/rapports/page.tsx
+// app/admin/presences/page.tsx
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { AdminRapportsPage } from "@/components/admin/admin-rapports-page";
+import { AdminPresencesPage } from "@/components/admin/admin-presences-page";
 
-export default async function AdminRapports() {
+export default async function AdminPresences() {
   const session = await auth();
 
   if (!session?.user) {
@@ -14,5 +14,5 @@ export default async function AdminRapports() {
     redirect("/employee");
   }
 
-  return <AdminRapportsPage user={session.user as any} />;
+  return <AdminPresencesPage user={session.user as any} />;
 }
