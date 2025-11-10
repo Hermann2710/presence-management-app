@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> } // params est une Promise
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -12,7 +12,6 @@ export async function PUT(
       return Response.json({ error: "Non autorisé" }, { status: 403 });
     }
 
-    // Déballer les params avec await
     const { id } = await params;
 
     if (!id) {
@@ -37,7 +36,7 @@ export async function PUT(
       where: { id: id },
       data: {
         ...(status && { status }),
-        ...(notes !== undefined && { notes }), // Permet de mettre notes à null
+        ...(notes !== undefined && { notes }),
         ...(checkIn && { checkIn: new Date(checkIn) }),
         ...(checkOut && { checkOut: new Date(checkOut) }),
       },

@@ -56,15 +56,13 @@ export function AdminRapportsPage({ user }: AdminRapportsPageProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            {/* 
-            <Filters
+            {/* <Filters
               periodFilter={periodFilter}
               setPeriodFilter={setPeriodFilter}
               departmentFilter={departmentFilter}
               setDepartmentFilter={setDepartmentFilter}
               departmentStats={departmentStats}
-            /> 
-            */}
+            /> */}
 
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <span>Connecté en tant que</span>

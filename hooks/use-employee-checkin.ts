@@ -6,11 +6,10 @@ import { useTodayAttendance, useCheckInOut } from "./use-attendance";
 export function useEmployeeCheckin() {
   const { data: todayAttendance, isLoading: todayLoading } =
     useTodayAttendance();
-  const { mutate: checkInOut, isPending } = useCheckInOut();
   const { toast } = useToast();
-
   const [notes, setNotes] = useState("");
   const [isAddingNote, setIsAddingNote] = useState(false);
+  const { mutate: checkInOut, isPending } = useCheckInOut(notes);
 
   // Calculs des états
   const canCheckIn = !todayAttendance?.checkIn;

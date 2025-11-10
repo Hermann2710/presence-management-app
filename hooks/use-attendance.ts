@@ -60,7 +60,7 @@ export function useMonthlyAttendance(month?: string, year?: string) {
 }
 
 // POST - Pointage (checkin/checkout)
-export function useCheckInOut() {
+export function useCheckInOut(message?: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -70,7 +70,7 @@ export function useCheckInOut() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action, message }),
       });
 
       if (!response.ok) {
@@ -97,10 +97,12 @@ export function useAdminStats(date?: string) {
     queryFn: async () => {
       const params = new URLSearchParams();
       const targetDate = date || new Date().toISOString().split("T")[0];
-      params.append("date", targetDate);
+      if (date) {
+        params.append("date", targetDate);
+      }
 
-      // Correction du chemin - utilisez "attendances" au pluriel
-      const response = await fetch(`/api/admin/attendances/stats?${params}`);
+      // Maintenant ça pointe vers le bon endpoint
+      const response = await fetch(`/api/admin/stats?${params}`);
 
       if (!response.ok) {
         const error = await response.json();
@@ -109,13 +111,13 @@ export function useAdminStats(date?: string) {
 
       const data = await response.json();
 
-      // Validation des données
+      // Validation des données avec les bons noms de propriétés
       return {
         totalEmployees: data.totalEmployees || 0,
         presentToday: data.presentToday || 0,
         absentToday: data.absentToday || 0,
         lateToday: data.lateToday || 0,
-        noAttendance: data.noAttendance || 0,
+        employeesWithoutAttendance: data.employeesWithoutAttendance || 0,
         attendanceRate: data.attendanceRate || 0,
         departmentStats: data.departmentStats || [],
         date: data.date,

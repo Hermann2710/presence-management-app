@@ -47,10 +47,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { action } = body; // 'checkin' ou 'checkout'
+    const { action, message } = body; // 'checkin' ou 'checkout'
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
     if (action === "checkin") {
       // Vérifier si déjà pointé aujourd'hui
@@ -85,6 +84,7 @@ export async function POST(request: NextRequest) {
           date: today,
           checkIn: checkInTime,
           status,
+          notes: message,
         },
       });
 
