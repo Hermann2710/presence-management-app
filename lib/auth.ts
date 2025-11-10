@@ -1,34 +1,34 @@
-import NextAuth from "next-auth"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import type { Adapter } from "next-auth/adapters"
-import { prisma } from "@/lib/prisma"
+import NextAuth from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import type { Adapter } from "next-auth/adapters";
+import { prisma } from "@/lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
-import {compare} from "bcryptjs";
+import { compare } from "bcryptjs";
 
-if(!process.env.AUTH_SECRET) {
+if (!process.env.AUTH_SECRET) {
   throw new Error("AUTH_SECRET is not defined");
 }
 
-if(!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
+if (!process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CLIENT_SECRET) {
   throw new Error("GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET is not defined");
 }
- 
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
     }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if(!credentials?.email || !credentials?.password) {
+        if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
@@ -36,7 +36,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const password = credentials.password as string;
 
         const user = await prisma.user.findUnique({
-          where: { email }
+          where: { email },
         });
 
         if (!user) {
@@ -50,25 +50,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         return user;
-      }
-    })
+      },
+    }),
   ],
   session: {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user}) {
-      if(user) {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
         token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
+        session.user.id = token.id;
         session.user.role = token.role;
       }
       return session;
-    }
+    },
   },
   secret: process.env.AUTH_SECRET,
-})
+});

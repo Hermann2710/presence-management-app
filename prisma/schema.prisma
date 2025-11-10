@@ -1,3 +1,4 @@
+// prisma/schema.prisma
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
@@ -8,41 +9,47 @@ generator client {
 }
 
 enum UserRole {
-  admin
-  employee
+  ADMIN
+  EMPLOYEE
 }
 
 enum AttendanceStatus {
-  present
-  absent
-  late
+  PRESENT
+  ABSENT
+  LATE
+  SICK_LEAVE
+  VACATION
 }
 
 enum UserStatus {
-  active
-  inactive
+  ACTIVE
+  INACTIVE
 }
 
 model User {
-  id            String     @id @default(cuid())
-  name          String?
-  email         String?    @unique
+  id            String      @id @default(cuid())
+  name          String
+  email         String      @unique
   emailVerified DateTime?
   image         String?
-  role          UserRole   @default(employee)
-  status        UserStatus @default(active)
-  phone         String?    @unique
+  role          UserRole    @default(EMPLOYEE)
+  status        UserStatus  @default(ACTIVE)
+  phone         String?     @unique
   department    String?
   position      String?
-  password      String?
+  password      String?     // Pour l'authentification credentials
 
+  // Relations
   accounts      Account[]
   sessions      Session[]
-  Authenticator Authenticator[]
+  authenticator Authenticator[]
   attendances   Attendance[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("users")
+  employeeProfiles EmployeeProfile[]
 }
 
 model Account {
@@ -59,12 +66,10 @@ model Account {
   id_token          String?
   session_state     String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Session {
@@ -74,20 +79,21 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@map("sessions")
 }
 
 model VerificationToken {
   identifier String
-  token      String
+  token      String   @unique
   expires    DateTime
 
   @@unique([identifier, token])
+  @@map("verification_tokens")
 }
 
 model Authenticator {
-  credentialID         String  @unique
+  id                   String   @id @default(cuid())
+  credentialID         String   @unique
   userId               String
   providerAccountId    String
   credentialPublicKey  String
@@ -98,21 +104,43 @@ model Authenticator {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([userId, credentialID])
+  @@unique([userId, credentialID])
+  @@map("authenticators")
 }
 
 model Attendance {
-  id           String           @id @default(cuid())
-  employeeId   String
-  employeeName String
-  date         DateTime
-  checkIn      DateTime
-  checkOut     DateTime?
-  status       AttendanceStatus
-  notes        String?
+  id         String           @id @default(cuid())
+  userId     String
+  date       DateTime
+  checkIn    DateTime?
+  checkOut   DateTime?
+  status     AttendanceStatus @default(PRESENT)
+  notes      String?
 
-  employee User @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  // Relation avec l'employé
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("attendances")
+}
+
+model EmployeeProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  employeeId String? @unique // Numéro d'employé optionnel
+  position  String
+  department String
+  hireDate  DateTime
+  salary    Float?
+  address   String?
+  emergencyContact String?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("employee_profiles")
 }

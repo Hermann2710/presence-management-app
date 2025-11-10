@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { ReactQueryProvider } from "@/components/react-query-provider";
-import { Toaster } from "sonner";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -23,11 +22,10 @@ export default function RootLayout({
   return (
     <SessionProvider>
       <ReactQueryProvider>
-        <html lang="fr" className="dark">
+        <html lang="fr">
           <body className={`font-sans antialiased ${outfit.className}`}>
             {children}
             <Analytics />
-            <Toaster />
           </body>
         </html>
       </ReactQueryProvider>
