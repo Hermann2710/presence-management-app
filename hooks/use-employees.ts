@@ -1,6 +1,20 @@
 // hooks/use-employees.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
+export interface Employee {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  department: string | null;
+  position: string | null;
+  status: string;
+  createdAt: string;
+  _count: {
+    attendances: number;
+  };
+}
+
 // GET - Liste des employés
 export function useEmployees(filters?: {
   department?: string;

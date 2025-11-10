@@ -1,10 +1,25 @@
-// components/employees/columns.tsx
+// components/admin/employees-columns.tsx
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
-import { Users, Building, Briefcase, Phone } from "lucide-react";
-import { User } from "@prisma/client";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Mail,
+  Phone,
+  Building,
+  Briefcase,
+  MoreVertical,
+  Edit,
+  Trash2,
+} from "lucide-react";
+import { Employee } from "@/types/employee";
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: "name",
     header: "Nom",
@@ -13,16 +28,24 @@ export const columns: ColumnDef<User>[] = [
       return (
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-            <Users className="h-4 w-4 text-blue-600" />
+            <span className="text-sm font-medium text-blue-600">
+              {employee.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </span>
           </div>
           <div>
-            <div className="font-medium">{employee.name}</div>
-            <div className="text-sm text-gray-500">{employee.email}</div>
+            <div className="font-medium text-gray-900">{employee.name}</div>
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              <Mail className="h-3 w-3" />
+              {employee.email}
+            </div>
           </div>
         </div>
       );
     },
-    size: 200,
+    size: 250,
   },
   {
     accessorKey: "department",
@@ -38,7 +61,7 @@ export const columns: ColumnDef<User>[] = [
         <span className="text-gray-400">Non assigné</span>
       );
     },
-    size: 120,
+    size: 150,
   },
   {
     accessorKey: "position",
@@ -54,7 +77,7 @@ export const columns: ColumnDef<User>[] = [
         <span className="text-gray-400">Non défini</span>
       );
     },
-    size: 150,
+    size: 180,
   },
   {
     accessorKey: "phone",
@@ -67,10 +90,10 @@ export const columns: ColumnDef<User>[] = [
           <span>{phone}</span>
         </div>
       ) : (
-        <span className="text-gray-400">Non renseigné</span>
+        <span className="text-gray-400">-</span>
       );
     },
-    size: 130,
+    size: 140,
   },
   {
     accessorKey: "status",
@@ -82,8 +105,8 @@ export const columns: ColumnDef<User>[] = [
           variant="secondary"
           className={
             status === "ACTIVE"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
+              ? "bg-green-100 text-green-800 hover:bg-green-100"
+              : "bg-red-100 text-red-800 hover:bg-red-100"
           }
         >
           {status === "ACTIVE" ? "Actif" : "Inactif"}
@@ -99,7 +122,7 @@ export const columns: ColumnDef<User>[] = [
       const count = info.getValue() as number;
       return (
         <div className="text-center">
-          <div className="font-semibold">{count}</div>
+          <div className="font-semibold text-gray-900">{count}</div>
           <div className="text-xs text-gray-500">enregistrements</div>
         </div>
       );
@@ -113,7 +136,9 @@ export const columns: ColumnDef<User>[] = [
       const date = new Date(info.getValue() as string);
       return (
         <div className="text-sm">
-          <div>{date.toLocaleDateString("fr-FR")}</div>
+          <div className="text-gray-900">
+            {date.toLocaleDateString("fr-FR")}
+          </div>
           <div className="text-gray-500">
             {date.toLocaleTimeString("fr-FR", {
               hour: "2-digit",
@@ -124,5 +149,37 @@ export const columns: ColumnDef<User>[] = [
       );
     },
     size: 120,
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: (info) => {
+      const employee = info.row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => info.table.options.meta?.onEdit?.(employee)}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Modifier
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => info.table.options.meta?.onDelete?.(employee)}
+              className="text-red-600 focus:text-red-600"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Supprimer
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+    size: 80,
   },
 ];

@@ -1,9 +1,7 @@
 // components/admin/employee-form.tsx
 "use client";
 
-import { useState } from "react";
-import { useCreateEmployee, useUpdateEmployee } from "@/hooks/use-employees";
-import { useToast } from "@/components/ui/use-toast";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,57 +19,48 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { Employee } from "@/hooks/use-employees";
 
 interface EmployeeFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  employee?: any;
+  employee?: Employee | null;
+  onSubmit: (data: any) => void;
+  isLoading?: boolean;
 }
 
 export function EmployeeForm({
   open,
   onOpenChange,
   employee,
+  onSubmit,
+  isLoading = false,
 }: EmployeeFormProps) {
-  const { toast } = useToast();
-  const createEmployee = useCreateEmployee();
-  const updateEmployee = useUpdateEmployee();
-
   const [formData, setFormData] = useState({
-    name: employee?.name || "",
-    email: employee?.email || "",
-    phone: employee?.phone || "",
-    department: employee?.department || "",
-    position: employee?.position || "",
-    status: employee?.status || "ACTIVE",
+    name: "",
+    email: "",
+    phone: "",
+    department: "",
+    position: "",
+    status: "ACTIVE",
     password: "",
   });
 
   const isEditing = !!employee;
-  const isLoading = createEmployee.isPending || updateEmployee.isPending;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      if (isEditing) {
-        await updateEmployee.mutateAsync({
-          id: employee.id,
-          data: formData,
-        });
-        toast({
-          title: "Employé modifié",
-          description: "Les modifications ont été enregistrées",
-        });
-      } else {
-        await createEmployee.mutateAsync(formData);
-        toast({
-          title: "Employé créé",
-          description: "Le nouvel employé a été ajouté avec succès",
-        });
-      }
-
-      onOpenChange(false);
+  // Reset form when employee changes
+  useEffect(() => {
+    if (employee) {
+      setFormData({
+        name: employee.name || "",
+        email: employee.email || "",
+        phone: employee.phone || "",
+        department: employee.department || "",
+        position: employee.position || "",
+        status: employee.status || "ACTIVE",
+        password: "", // Never pre-fill password
+      });
+    } else {
       setFormData({
         name: "",
         email: "",
@@ -81,17 +70,41 @@ export function EmployeeForm({
         status: "ACTIVE",
         password: "",
       });
-    } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive",
-      });
     }
+  }, [employee]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Prepare data for submission
+    const submitData = isEditing
+      ? {
+          name: formData.name,
+          phone: formData.phone,
+          department: formData.department,
+          position: formData.position,
+          status: formData.status,
+        }
+      : {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          department: formData.department,
+          position: formData.position,
+          status: formData.status,
+          password: formData.password,
+        };
+
+    onSubmit(submitData);
+  };
+
+  const handleClose = () => {
+    onOpenChange(false);
+    // Don't reset form immediately to avoid flicker
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>
@@ -210,7 +223,8 @@ export function EmployeeForm({
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={handleClose}
+              disabled={isLoading}
             >
               Annuler
             </Button>

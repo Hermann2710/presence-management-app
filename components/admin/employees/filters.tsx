@@ -1,4 +1,3 @@
-// components/employees/employees-filters.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,6 +31,9 @@ export function EmployeesFilters({
   departments,
   onReset,
 }: EmployeesFiltersProps) {
+  const hasActiveFilters =
+    departmentFilter !== "all" || statusFilter !== "all" || globalFilter;
+
   return (
     <Card>
       <CardHeader>
@@ -48,7 +50,7 @@ export function EmployeesFilters({
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
               <Input
-                placeholder="Nom, email, poste..."
+                placeholder="Rechercher un employé..."
                 value={globalFilter}
                 onChange={(e) => onGlobalFilterChange(e.target.value)}
                 className="pl-9"
@@ -94,14 +96,13 @@ export function EmployeesFilters({
             </Select>
           </div>
 
-          {/* Actions */}
-          <div>
-            <label className="text-sm font-medium mb-2 block invisible">
-              Actions
-            </label>
-            <Button variant="outline" onClick={onReset} className="w-full">
-              Réinitialiser
-            </Button>
+          {/* Reset filters */}
+          <div className="flex items-end">
+            {hasActiveFilters && (
+              <Button variant="outline" onClick={onReset} className="w-full">
+                Réinitialiser
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>

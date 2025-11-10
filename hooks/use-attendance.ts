@@ -96,24 +96,40 @@ export function useAdminStats(date?: string) {
     queryKey: ["admin", "stats", date],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (date) params.append("date", date);
+      const targetDate = date || new Date().toISOString().split("T")[0];
+      params.append("date", targetDate);
 
+      // Correction du chemin - utilisez "attendances" au pluriel
       const response = await fetch(`/api/admin/attendances/stats?${params}`);
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Erreur lors du chargement des stats");
       }
-      return await response.json();
+
+      const data = await response.json();
+
+      // Validation des données
+      return {
+        totalEmployees: data.totalEmployees || 0,
+        presentToday: data.presentToday || 0,
+        absentToday: data.absentToday || 0,
+        lateToday: data.lateToday || 0,
+        noAttendance: data.noAttendance || 0,
+        attendanceRate: data.attendanceRate || 0,
+        departmentStats: data.departmentStats || [],
+        date: data.date,
+      };
     },
-    enabled: true, // Toujours activé pour le dashboard
   });
 }
 
-// GET - Toutes les présences (admin)
+// GET - Liste des présences (admin) avec filtres
 export function useAdminAttendances(filters?: {
   date?: string;
   department?: string;
   userId?: string;
+  status?: string;
   limit?: number;
 }) {
   return useQuery({
@@ -123,9 +139,12 @@ export function useAdminAttendances(filters?: {
       if (filters?.date) params.append("date", filters.date);
       if (filters?.department) params.append("department", filters.department);
       if (filters?.userId) params.append("userId", filters.userId);
+      if (filters?.status) params.append("status", filters.status);
       if (filters?.limit) params.append("limit", filters.limit.toString());
 
+      // Assurez-vous que l'URL correspond à votre route
       const response = await fetch(`/api/admin/attendances?${params}`);
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(
@@ -143,7 +162,7 @@ export function useUpdateAttendance() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      const response = await fetch(`/api/admin/attendance/${id}`, {
+      const response = await fetch(`/api/admin/attendances/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -1,5 +1,3 @@
-// components/employees/employees-table.tsx
-import { flexRender, Table } from "@tanstack/react-table";
 import {
   Card,
   CardContent,
@@ -8,28 +6,35 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Users } from "lucide-react";
-import { Employee } from "@/types/employee";
+import { Badge } from "@/components/ui/badge";
+import { flexRender, Table } from "@tanstack/react-table";
+import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 
-interface EmployeesTableProps {
-  table: Table<Employee>;
-  columns: any[];
+interface Attendance {
+  id: string;
+  date: string;
+  checkIn: string | null;
+  checkOut: string | null;
+  status: string;
+  notes?: string;
 }
 
-export function EmployeesTable({ table, columns }: EmployeesTableProps) {
+interface PresencesTableProps {
+  table: Table<Attendance>;
+  columns: any[];
+  totalCount: number;
+}
+
+export function PresencesTable({
+  table,
+  columns,
+  totalCount,
+}: PresencesTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Liste des Employés</CardTitle>
-        <CardDescription>
-          {table.getFilteredRowModel().rows.length} employé(s) au total -{" "}
-          {
-            table
-              .getFilteredRowModel()
-              .rows.filter((row) => row.original.status === "ACTIVE").length
-          }{" "}
-          actif(s)
-        </CardDescription>
+        <CardTitle>Historique des présences</CardTitle>
+        <CardDescription>{totalCount} présence(s) trouvée(s)</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="rounded-md border">
@@ -76,10 +81,10 @@ export function EmployeesTable({ table, columns }: EmployeesTableProps) {
                       colSpan={columns.length}
                       className="p-8 text-center text-gray-500"
                     >
-                      <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                      <p>Aucun employé trouvé</p>
+                      <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                      <p>Aucune présence trouvée</p>
                       <p className="text-sm mt-1">
-                        Ajustez vos filtres ou ajoutez des employés
+                        Ajustez vos filtres ou vérifiez vos pointages
                       </p>
                     </td>
                   </tr>
@@ -94,8 +99,7 @@ export function EmployeesTable({ table, columns }: EmployeesTableProps) {
           <div className="flex items-center justify-between mt-4">
             <div className="text-sm text-gray-600">
               Page {table.getState().pagination.pageIndex + 1} sur{" "}
-              {table.getPageCount()} - {table.getFilteredRowModel().rows.length}{" "}
-              employé(s)
+              {table.getPageCount()}
             </div>
 
             <div className="flex items-center gap-2">

@@ -1,4 +1,3 @@
-// components/attendances/columns.tsx
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Edit, Save, X } from "lucide-react";
 import { Attendance } from "./types";
 import { formatDateSafe, formatTimeSafe } from "./utils";
+import { useRef, useEffect } from "react";
 
 interface AttendanceColumnsProps {
   editingRow: string | null;
@@ -24,6 +24,93 @@ interface AttendanceColumnsProps {
   onEdit: (attendance: Attendance) => void;
   isUpdating: boolean;
 }
+
+// Composant pour l'input des notes avec gestion du focus
+const NotesInput = ({
+  value,
+  onChange,
+  onSave,
+  onCancel,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  onSave: () => void;
+  onCancel: () => void;
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Focus automatique quand le composant est monté
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      onSave();
+    }
+    if (e.key === "Escape") {
+      e.preventDefault();
+      onCancel();
+    }
+  };
+
+  return (
+    <Input
+      ref={inputRef}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onKeyDown={handleKeyDown}
+      placeholder="Notes..."
+      className="w-48 min-w-[120px]"
+    />
+  );
+};
+
+// Composant pour l'input de temps
+const TimeInput = ({
+  value,
+  onChange,
+  date,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  date: string;
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  const timeValue = value ? new Date(value).toTimeString().slice(0, 5) : "";
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = e.target.value;
+    if (time) {
+      const newDateTime = `${date}T${time}`;
+      onChange(newDateTime);
+    } else {
+      onChange("");
+    }
+  };
+
+  return (
+    <Input
+      ref={inputRef}
+      type="time"
+      value={timeValue}
+      onChange={handleChange}
+      onFocus={(e) => e.target.select()}
+      className="w-24"
+      step="300"
+    />
+  );
+};
 
 export const createAttendanceColumns = ({
   editingRow,
@@ -44,7 +131,10 @@ export const createAttendanceColumns = ({
   {
     accessorKey: "user.department",
     header: "Département",
-    cell: (info) => (info.getValue() as string) || "Non assigné",
+    cell: (info) => {
+      const department = info.getValue() as string;
+      return department || <span className="text-gray-400">Non assigné</span>;
+    },
     size: 120,
   },
   {
@@ -58,20 +148,13 @@ export const createAttendanceColumns = ({
     header: "Arrivée",
     cell: (info) => {
       const attendance = info.row.original;
+
       if (editingRow === attendance.id) {
         return (
-          <Input
-            type="time"
-            value={editData.checkIn?.slice(0, 5) || ""}
-            onChange={(e) =>
-              setEditData({
-                ...editData,
-                checkIn: e.target.value
-                  ? `${dateFilter}T${e.target.value}:00`
-                  : null,
-              })
-            }
-            className="w-24"
+          <TimeInput
+            value={editData.checkIn || ""}
+            onChange={(value) => setEditData({ ...editData, checkIn: value })}
+            date={dateFilter || attendance.date.split("T")[0]}
           />
         );
       }
@@ -84,20 +167,13 @@ export const createAttendanceColumns = ({
     header: "Départ",
     cell: (info) => {
       const attendance = info.row.original;
+
       if (editingRow === attendance.id) {
         return (
-          <Input
-            type="time"
-            value={editData.checkOut?.slice(0, 5) || ""}
-            onChange={(e) =>
-              setEditData({
-                ...editData,
-                checkOut: e.target.value
-                  ? `${dateFilter}T${e.target.value}:00`
-                  : null,
-              })
-            }
-            className="w-24"
+          <TimeInput
+            value={editData.checkOut || ""}
+            onChange={(value) => setEditData({ ...editData, checkOut: value })}
+            date={dateFilter || attendance.date.split("T")[0]}
           />
         );
       }
@@ -164,18 +240,16 @@ export const createAttendanceColumns = ({
 
       if (editingRow === attendance.id) {
         return (
-          <Input
-            value={editData.notes || notes || ""}
-            onChange={(e) =>
-              setEditData({ ...editData, notes: e.target.value })
-            }
-            placeholder="Notes..."
-            className="w-48"
+          <NotesInput
+            value={editData.notes ?? notes ?? ""}
+            onChange={(value) => setEditData({ ...editData, notes: value })}
+            onSave={() => onSave(attendance.id)}
+            onCancel={onCancel}
           />
         );
       }
 
-      return notes || "-";
+      return notes || <span className="text-gray-400">-</span>;
     },
     size: 200,
   },
@@ -192,23 +266,35 @@ export const createAttendanceColumns = ({
               size="sm"
               onClick={() => onSave(attendance.id)}
               disabled={isUpdating}
+              className="h-8 w-8 p-0"
             >
               {isUpdating ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
               ) : (
-                <Save className="h-4 w-4" />
+                <Save className="h-3 w-3" />
               )}
             </Button>
-            <Button size="sm" variant="outline" onClick={onCancel}>
-              <X className="h-4 w-4" />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onCancel}
+              className="h-8 w-8 p-0"
+              disabled={isUpdating}
+            >
+              <X className="h-3 w-3" />
             </Button>
           </div>
         );
       }
 
       return (
-        <Button size="sm" variant="outline" onClick={() => onEdit(attendance)}>
-          <Edit className="h-4 w-4" />
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => onEdit(attendance)}
+          className="h-8 w-8 p-0"
+        >
+          <Edit className="h-3 w-3" />
         </Button>
       );
     },

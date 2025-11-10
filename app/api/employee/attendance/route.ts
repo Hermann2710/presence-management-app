@@ -72,7 +72,12 @@ export async function POST(request: NextRequest) {
       }
 
       const checkInTime = new Date();
-      const status = checkInTime.getHours() > 9 ? "LATE" : "PRESENT";
+      let status: "PRESENT" | "LATE";
+      if (checkInTime.getHours() <= 8 && checkInTime.getMinutes() <= 15) {
+        status = "PRESENT";
+      } else {
+        status = "LATE";
+      }
 
       const attendance = await prisma.attendance.create({
         data: {
