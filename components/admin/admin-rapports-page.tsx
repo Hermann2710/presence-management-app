@@ -56,13 +56,15 @@ export function AdminRapportsPage({ user }: AdminRapportsPageProps) {
           </div>
 
           <div className="flex items-center gap-4">
+            {/* 
             <Filters
               periodFilter={periodFilter}
               setPeriodFilter={setPeriodFilter}
               departmentFilter={departmentFilter}
               setDepartmentFilter={setDepartmentFilter}
               departmentStats={departmentStats}
-            />
+            /> 
+            */}
 
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <span>Connecté en tant que</span>
@@ -76,7 +78,7 @@ export function AdminRapportsPage({ user }: AdminRapportsPageProps) {
 
         {/* Graphiques et Visualisations */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <MonthlyChart monthlyStats={monthlyStats} />
+          {/* <MonthlyChart monthlyStats={monthlyStats} /> */}
           <DepartmentChart departmentStats={departmentStats} />
         </div>
 
@@ -84,7 +86,7 @@ export function AdminRapportsPage({ user }: AdminRapportsPageProps) {
         <DetailedStats stats={stats} />
 
         {/* Actions d'Export */}
-        <ExportActions stats={stats} />
+        {/* <ExportActions stats={stats} /> */}
 
         {/* Résumé Exécutif */}
         <ExecutiveSummary stats={stats} />

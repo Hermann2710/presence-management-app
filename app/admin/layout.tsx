@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import config from "@/config";
 
 export default function AdminLayout({
   children,
@@ -87,7 +88,9 @@ export default function AdminLayout({
               <Building2 className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900">WorkFlow RH</h1>
+              <h1 className="text-lg font-bold text-gray-900">
+                {config.APP_TITLE}
+              </h1>
               <p className="text-xs text-gray-500">Administration</p>
             </div>
           </div>

@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Label } from "../ui/label";
 import { Lock, Mail } from "lucide-react";
-import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Form } from "../ui/form";
 import { useForm } from "react-hook-form";
@@ -20,6 +18,10 @@ export default function LoginForm() {
 
   const form = useForm<SigninSchemaType>({
     resolver: zodResolver(SigninSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const { handleSubmit, register } = form;
@@ -39,9 +41,9 @@ export default function LoginForm() {
       const session = await getSession();
       const role = session?.user?.role;
 
-      if (role === "admin") {
+      if (role === "ADMIN") {
         redirect("/admin");
-      } else if (role === "employee") {
+      } else if (role === "EMPLOYEE") {
         redirect("/employee");
       } else {
         redirect("/");
