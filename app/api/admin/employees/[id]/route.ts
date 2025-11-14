@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> } // params est une Promise
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();

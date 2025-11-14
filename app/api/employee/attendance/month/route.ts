@@ -1,4 +1,3 @@
-// app/api/employee/attendance/month/route.ts
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";

@@ -1,7 +1,12 @@
-// app/employee/pointage/page.tsx
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { PointagePage } from "@/components/employee/pointage-page";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Pointage",
+  description: "Pointage de l'employé",
+};
 
 export default async function Pointage() {
   const session = await auth();

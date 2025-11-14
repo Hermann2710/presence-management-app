@@ -1,7 +1,12 @@
-// app/admin/presences/page.tsx
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { AdminPresencesPage } from "@/components/admin/admin-presences-page";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Présences",
+  description: "Présences de l'administrateur",
+};
 
 export default async function AdminPresences() {
   const session = await auth();

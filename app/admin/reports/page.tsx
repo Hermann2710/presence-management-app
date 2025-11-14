@@ -1,7 +1,12 @@
-// app/admin/rapports/page.tsx
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { AdminRapportsPage } from "@/components/admin/admin-rapports-page";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Rapports",
+  description: "Rapports de l'administrateur",
+};
 
 export default async function AdminRapports() {
   const session = await auth();

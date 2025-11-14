@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Card,
   CardContent,
@@ -9,6 +7,12 @@ import {
 } from "@/components/ui/card";
 import { Building2 } from "lucide-react";
 import LoginForm from "@/components/auth/login-form";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Connexion",
+  description: "Connectez-vous pour accéder à votre espace",
+};
 
 export default function LoginPage() {
   return (

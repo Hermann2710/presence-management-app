@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <SessionProvider>
       <ReactQueryProvider>
-        <html lang="fr">
+        <html suppressHydrationWarning lang="fr">
           <body className={`font-sans antialiased ${outfit.className}`}>
             {children}
             <Analytics />
