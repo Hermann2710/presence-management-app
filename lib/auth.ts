@@ -10,6 +10,7 @@ if (!process.env.AUTH_SECRET) {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   adapter: PrismaAdapter(prisma) as Adapter,
   providers: [
     CredentialsProvider({
