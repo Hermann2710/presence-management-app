@@ -22,23 +22,10 @@ async function main() {
       },
     });
 
-    // Créer un employé
-    const employee = await prisma.user.upsert({
-      where: { email: "employee@company.com" },
-      update: {},
-      create: {
-        email: "employee@company.com",
-        name: "John Employee",
-        password: hashedPassword,
-        role: "EMPLOYEE",
-      },
-    });
-
     console.log("✅ Seed auth terminé avec succès!");
     console.log("");
     console.log("📧 Comptes créés:");
     console.log("   Admin: admin@company.com / password123");
-    console.log("   Employé: employee@company.com / password123");
   } catch (error) {
     console.error("❌ Erreur lors du seed:", error);
     process.exit(1);
